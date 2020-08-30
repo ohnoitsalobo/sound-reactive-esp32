@@ -13,7 +13,7 @@ ___
 
 1) **Install necessary libraries.**
 
-Make sure you have the latest [Arduino Core for ESP32](https://github.com/espressif/arduino-esp32) installed.
+Make sure you have the latest [Arduino Core for ESP32](https://github.com/espressif/arduino-esp32) installed. Then install the following libraries:
 
 - [FastLED](https://github.com/FastLED/FastLED)
 
@@ -29,7 +29,7 @@ Make sure you have the latest [Arduino Core for ESP32](https://github.com/espres
 
 2) **Compile and upload program (`src`) AND filesystem (`data`)**
 
-- change wireless SSID and password, LED data pin, and number of LEDs in `headers.h` (you may need to adjust `FFT.ino` for the best audio-reactive display, but it should still look OK without adjustment).
+- change wireless SSID and password, LED data pin, and number of LEDs in `headers.h` (you may need to adjust the exponent in `FFT.ino` for the best audio-reactive display, but it should still look OK without adjustment).
 
 - `pio run -t upload` (program)
 
@@ -39,7 +39,7 @@ Make sure you have the latest [Arduino Core for ESP32](https://github.com/espres
 
 - LED data out -> ESP32 pin 13
 
-- audio in -> pin 39 (mono), pins 39 and 36 (stereo) - see diagram `stereo_input_wiring.jpg`
+- audio in -> pin 39 (mono), pins 39 and 36 (stereo) - see diagram [`stereo_input_wiring.jpg`](https://github.com/ohnoitsalobo/sound-reactive-esp32/blob/master/Stereo_Input_Wiring.jpg)
 
 These can be changed in `platformio.ini`
 
