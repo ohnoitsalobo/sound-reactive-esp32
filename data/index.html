@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LED Strip Control</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script src="p5.min.js" type="text/javascript"></script>
+    <script src="script.js" type="text/javascript"></script>
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<center>
+    <header>
+        <h1><span id="header">LED Strip Control</span></h1>
+    </header>
+    <body onload="onBodyLoad();">
+        <div>
+            <table border=1>
+                <tr>
+                    <td>Mode: </td>
+                    <td class="slider"><input id="m" type="range" min="0" max="2" step="1" oninput="sendRGB('M');" value="0"></td>
+                    <td colspan=3 id="mval"></td>
+                </tr>
+                <tr>
+                    <td>Brightness: </td>
+                    <td class="slider"><input id="v" type="range" min="0" max="255" step="1" oninput="sendRGB('V');" value="0"></td>
+                    <td class="value" id="vval"></td>
+                    <td class="button" rowspan=2><button type="button" id="next" onclick="next();">Next pattern</button></td>
+                </tr>
+                <tr style="color: #F00;">
+                    <td>Red: </td>
+                    <td class="slider"><input id="r" type="range" min="0" max="255" step="1" oninput="sendRGB('R');" value="0"></td>
+                    <td class="value" id="rval"></td>
+                </tr>
+                <tr style="color: #0F0;">
+                    <td>Green: </td>
+                    <td class="slider"><input id="g" type="range" min="0" max="255" step="1" oninput="sendRGB('G');" value="0"></td>
+                    <td class="value" id="gval"></td>
+                    <td class="button" rowspan=2><button type="button" id="prev" onclick="prev();">Previous pattern</button></td>
+                </tr>
+                <tr style="color: #00F;">
+                    <td>Blue: </td>
+                    <td class="slider"><input id="b" type="range" min="0" max="255" step="1" oninput="sendRGB('B');" value="0"></td>
+                    <td class="value" id="bval"></td>
+                <tr style="color: yellow;">
+                    <td>Hue: </td>
+                    <td class="slider"><input id="h" type="range" min="0" max="224" step="1" oninput="sendRGB('H');" value="0"></td>
+                    <td class="value" id="hval"></td>
+                    <td class="button" rowspan=2><button type="button" id="next" onclick="reset();">Reset</button></td>
+                </tr>
+                <tr style="color: pink;">
+                    <td>Saturation: </td>
+                    <td class="slider"><input id="s" type="range" min="0" max="255" step="1" oninput="sendRGB('S');" value="0"></td>
+                    <td class="value" id="sval"></td>
+                </tr>
+                <tr style="display: none;">
+                    <td><input type="checkbox" id="ll" checked></td>
+                    <td><input type="checkbox" id="rr" checked></td>
+                </tr>
+                <tr>
+                    <td colspan=4>
+                        <table width=100%>
+                            <tr>
+                                <td class="button">
+                                    <button type="button" onclick="leftRight(0);">Left</button>
+                                </td>
+                                <td class="button">
+                                    <button type="button" onclick="leftRight(2);">Both</button>
+                                </td>
+                                <td class="button">
+                                    <button type="button" onclick="leftRight(1);">Right</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <div id="p5js"></div>
+            <!-- <div class="rainbow"></div> -->
+        </div>
+    </body>
+</center>
+</html>

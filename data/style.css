@@ -1,0 +1,69 @@
+/* @import url("https://fonts.googleapis.com/css?family=Source+Code+Pro:400"); */
+/* @import url("https://fonts.googleapis.com/css?family=Lato"); */
+/* @import url("https://fonts.googleapis.com/css?family=Oxanium"); */
+/* @import url("https://fonts.googleapis.com/css?family=Chakra+Petch"); */
+/* @import url("https://fonts.googleapis.com/css?family=Ubuntu"); */
+@import url("https://fonts.googleapis.com/css?family=Comfortaa");
+/* @import url("https://fonts.googleapis.com/css?family=Neuton"); */
+/* @import url("https://fonts.googleapis.com/css?family=Marmelad"); */
+/* @import url("https://fonts.googleapis.com/css?family=Overlock"); */
+/* @import url("https://fonts.googleapis.com/css?family=Baloo+Chettan+2"); */
+/* @import url("https://fonts.googleapis.com/css?family=Bellota"); */
+/* @import url("https://fonts.googleapis.com/css?family=Sniglet"); */
+/* @import url("https://fonts.googleapis.com/css?family=Coda"); */
+/* @import url("https://fonts.googleapis.com/css?family=Fondamento"); */
+/* @import url("https://fonts.googleapis.com/css?family=Pangolin"); */
+/* @import url("https://fonts.googleapis.com/css?family=Kelly+Slab"); */
+/* @import url("https://fonts.googleapis.com/css?family=Mirza"); */
+/* @import url("https://fonts.googleapis.com/css?family=Expletus+Sans"); */
+/* @import url("https://fonts.googleapis.com/css?family=Voces"); */
+
+html {
+    font-family: "Comfortaa", Georgia;
+    /* font-size: 1.1em; */
+    background-color: #000;
+    color: white;
+    height: 100%;
+}
+table {
+    background-color: #222;
+    text-align: center;
+    font-size: 100%;
+}
+input {
+    width: 90%;
+}
+button {
+    font-family: inherit;
+    font-size: 100%;
+    width: 95%;
+    height: 3em;
+}
+.slider {
+    width : 75%;
+    height: 3em;
+}
+.button {
+    border: 0;
+}
+.value {
+    width: 3em;
+}
+/*  * /
+.rainbow {
+    background: linear-gradient(to right, #F00, #FF0, #0F0, #0FF, #00F, #F0F);
+    color: transparent;
+    -webkit-background-clip: text;
+}
+/*  */
+/*  */
+.rainbow {
+    width: 600px;
+    height: 600px;
+    background: 
+        radial-gradient(rgba(255, 255, 255, 255) 2%, rgba(255, 255, 255, 0) 34%),
+        radial-gradient(rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 255) 70%),
+        conic-gradient(#F00, #FF0, #0F0, #0FF, #00F, #F0F, #F00);
+    border-radius: 10%;
+}
+/*  */
