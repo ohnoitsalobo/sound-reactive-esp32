@@ -1,3 +1,6 @@
+//// Most of the AsyncServer code was copied with minimal modification from one of the examples,
+  // so most of the time I have no idea what's going on here.
+
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 AsyncEventSource events("/events");
@@ -102,27 +105,12 @@ void wifiSetup(){
 void wifiLoop(){
     if(WiFi.status() == WL_CONNECTED){
         ArduinoOTA.handle();
-        ws.cleanupClients();
-        EVERY_N_MILLISECONDS(2000){
+        EVERY_N_SECONDS(1){
+            ws.cleanupClients();
+        }
+        EVERY_N_SECONDS(2){
             Serial.println(WiFi.localIP());
         }
-        // EVERY_N_MILLISECONDS(20){
-            // if(music && webSocketConn()){
-                // eqBroadcast = "E";
-                // for(uint8_t i = 0; i < NUM_LEDS/4; i++){
-                    // eqBroadcast += ",";
-                    // eqBroadcast += String(eq[0][i]);
-                    // if(eq[0][i] != 0) eq[0][i] /= 5.0;
-                // }
-                // for(uint8_t i = 0; i < NUM_LEDS/4; i++){
-                    // eqBroadcast += ",";
-                    // eqBroadcast += String(eq[1][i]);
-                    // if(eq[1][i] != 0) eq[1][i] /= 5.0;
-                // }
-                // webSocket.broadcastTXT(eqBroadcast);
-                // eqBroadcast = "";
-            // }
-        // }
         if(!digitalRead(2)){
             digitalWrite(2, HIGH);
             Serial.println("Wifi connected!");
@@ -179,8 +167,6 @@ void setupOTA(){
             uint32_t temp = progress / (total / 100);
             Serial.printf("Progress: %u%%\r", temp);
             if(temp<99){
-                // fill_solid (LEFT, map(temp, 0, 99, 0, NUM_LEDS/2), 0x020202);
-                // fill_solid (RIGHT, map(temp, 0, 99, 0, NUM_LEDS/2), 0x020202);
                 int t = map(temp, 0, 99, 0, NUM_LEDS/4);
                 fill_solid( RIGHT(           0, NUM_LEDS/4), t, 0x020202);
                 fill_solid( RIGHT(NUM_LEDS/2-t, NUM_LEDS/2), t, 0x020202);
@@ -295,7 +281,7 @@ void setupServer(){
 #endif
 }
 
-void handleSliders(){
+void handleSliders(){ // handle the slider values from the WebSocket
     if(WSdata.startsWith("reset")){
         WiFi.disconnect();
         digitalWrite(2, LOW);
@@ -345,18 +331,13 @@ void handleSliders(){
         }
         if(WSdata.endsWith("L")){
             manualColor_L = manualColor;
-            // fill_solid (LEFT, NUM_LEDS/2, manualColor_L);
         }else if(WSdata.endsWith("R")){
             manualColor_R = manualColor;
-            // fill_solid (RIGHT, NUM_LEDS/2, manualColor_R);
         }else if(WSdata.endsWith("B")){
             manualColor_L = manualColor;
             manualColor_R = manualColor;
-            // fill_solid (LEFT , NUM_LEDS/2, manualColor_L);
-            // fill_solid (RIGHT, NUM_LEDS/2, manualColor_R);
         }
     }
-    // WSdata = "";
 }
 
 //////// TIME //////////
@@ -367,10 +348,8 @@ void timeSetup(){
 
 void timeLoop(){
 	if(timeStatus() != timeSet){
-        // EVERY_N_SECONDS(30){
-            setSyncProvider(getNtpTime);
-            setSyncInterval(5000);
-        // }
+        setSyncProvider(getNtpTime);
+        setSyncInterval(5000);
     }
 }
 

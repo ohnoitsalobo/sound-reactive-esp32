@@ -1,12 +1,24 @@
-// APPLEMIDI_CREATE_DEFAULTSESSION_ESP32_INSTANCE();
+//// DISCLAIMER: Wireless MIDI is usable, but not 100% reliable at least in my testing.
+//// There will be a few missed notes on a melody line, and several missed notes if
+//// many chords are played in succession. Let me know if you find a way to fix this.
+//// AppleMIDI works flawlessly on a wired network connection.
+
+//// Once the program is loaded on the ESP32, Apple devices should immediately be able to
+  // detect it as a network MIDI device.
+//// On Windows, install rtpMIDI (https://www.tobias-erichsen.de/software/rtpmidi.html) in
+  // order to use the wireless MIDI functionality.
+
+
+
+APPLEMIDI_CREATE_DEFAULTSESSION_ESP32_INSTANCE();
 // #define APPLEMIDI_CREATE_DEFAULTSESSION_ESP32_INSTANCE()
 // APPLEMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, "ESP32", DEFAULT_CONTROL_PORT);
-APPLEMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, hostName, DEFAULT_CONTROL_PORT);
+// APPLEMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, hostName, DEFAULT_CONTROL_PORT);
 
 USING_NAMESPACE_APPLEMIDI
 
 void MIDIsetup(){
-    MIDI.begin(1); // listen on channel 1
+    MIDI.begin(); // start listening on MIDI channel 1
     AppleMIDI.setHandleConnected(OnAppleMidiConnected);
     AppleMIDI.setHandleDisconnected(OnAppleMidiDisconnected);
     AppleMIDI.setHandleError(OnAppleMidiError);
@@ -93,10 +105,8 @@ CRGB lastPressed;  // holder for last-detected key color
 void runLED(){
     EVERY_N_MILLISECONDS(50){ _hue++; gHue1++; gHue2--;}
     EVERY_N_MILLISECONDS(20){ 
-        // fadeToBlackBy( leds, NUM_LEDS, 10); // ( sustain ? 3 : 10) );
         nscale8( leds, NUM_LEDS, 240); // ( sustain ? 3 : 10) );
     }
-    // if(MidiEventReceived)
     MIDI2LED();
     FastLED.show();
     yield();
@@ -104,27 +114,17 @@ void runLED(){
 
 void MIDI2LED(){
     // MIDI note values 0 - 127 
-    // 36-96 (for 61-key) mapped to LED 0-60
-    // Serial.println(pitch);
-    // int temp = map(pitch, 36, 96, 0, NUM_LEDS-1);
-    
-    // if(temp < 0)
-        // temp = -temp;                   // if note goes above 60 or below 0
-    // else if(temp > NUM_LEDS)                  //      reverse it
-        // temp = NUM_LEDS - (temp%NUM_LEDS);
-    
-    // uint8_t _pitch = map(temp, 0, NUM_LEDS, 0, 224); // map note to color 'hue'
+    // 36-96 (for 61-key keboard)
+
     uint8_t _pos = MIDIdata[1]/127.0 * (NUM_LEDS/2-1); // map note to position
     uint8_t _col = MIDIdata[1]/127.0 * 224; // map note to position
     
-    // uint8_t _pos = map(temp, 0, NUM_LEDS, 0, NUM_LEDS-1);
     // assign color based on note position and intensity (velocity)
     RIGHT[_pos] = CHSV(_col + _hue, 255 - (MIDIdata[2]/2.0), MIDIdata[2]/127.0 * 255);
     LEFT [_pos] = RIGHT[_pos];
     if(MIDIdata[2] > 0 && millis()%2 == 0)
         MIDIdata[2]--;
     lastPressed = RIGHT[_pos]; // remember last-detected note color
-    // MidiEventReceived = false;
 }
 
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
@@ -151,7 +151,6 @@ void handleControlChange(byte channel, byte number, byte value){
     // channel 1 = modulation
     if( number == 1 ){
         fill_solid( leds, NUM_LEDS, 0x222222 );
-        // fill_rainbow(leds, NUM_LEDS, hue);
     }
     // channel 64 = damper / sustain pedal
     if( number == 64 ){

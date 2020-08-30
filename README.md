@@ -3,7 +3,17 @@
 This code was all written (and/or copied) in Notepad++, and compiled in PlatformIO. It _should_ would right out of the box.
 **Should**.
 
+I originally wrote this program for my [sound-reactive speaker lights](https://www.instagram.com/p/BvR3FLChP0C/).
+
+Later on I incorporated some code from [a previous MIDI LED project](https://www.instagram.com/p/BZefjNADfg1/) to make it MIDI-responsive, with some modifications to make it work over WiFi. Network MIDI is natively supported by Mac, and can be added Windows by installing [rtpMIDI](https://www.tobias-erichsen.de/software/rtpmidi.html).
+
+Finally, I recently switched from the regular ESP32 Server code to AsyncServer, and learned how to run the audio analysis routine (FFT) on the secondary ESP32 processor, freeing up the primary core to run the LEDs independently.
+
+___
+
 1) Install necessary libraries.
+
+Make sure you have the latest [Arduino Core for ESP32](https://github.com/espressif/arduino-esp32) installed.
 
 - [FastLED](https://github.com/FastLED/FastLED)
 
@@ -17,14 +27,19 @@ This code was all written (and/or copied) in Notepad++, and compiled in Platform
 
 - [AsyncTCP](https://github.com/me-no-dev/AsyncTCP)
 
-2) Compile and upload program (`src` folder) AND filesystem (`data` folder)
+2) Compile and upload program (`src`) AND filesystem (`data`)
 
-- `pio run -t upload`
+- change wireless SSID and password, LED data pin, and number of LEDs in `headers.h` (you may need to adjust `FFT.ino` for the best audio-reactive display, but it should still look OK without adjustment).
 
-- `pio run -t uploadfs`
+- `pio run -t upload` (program)
+
+- `pio run -t uploadfs` (filesystem)
 
 3) Wire up to necessary electronics
 
 - LED data out -> ESP32 pin 13
 
-- audio in -> pin 39 (mono), pins 39 and 36 (stereo) (see diagram `stereo_input_wiring.jpg`)
+- audio in -> pin 39 (mono), pins 39 and 36 (stereo) - see diagram `stereo_input_wiring.jpg`
+
+These can be changed in `platformio.ini`
+

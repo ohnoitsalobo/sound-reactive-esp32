@@ -105,11 +105,11 @@ void audio_spectrum(){ // using arduinoFFT to calculate frequencies and mapping 
         s = 255 - (temp1*30.0);
         v = temp1*255.0;
         tempRGB1 = CHSV(h, s, v);
-        uint8_t p = NUM_LEDS/2-pos;
         if(tempRGB1 > RIGHT[pos]){   // allow the brightest frequency to keep the LED lit, else it will show black even if there is a frequency on that range
             RIGHT[pos] = tempRGB1;
         }
 
+        uint8_t p = NUM_LEDS/2-pos;
         temp2 = spectrum[2][i]/MAX;
         s = 255 - (temp2*30.0);
         v = temp2*255.0;
@@ -226,34 +226,6 @@ void sinelon()
     RIGHT[pos2] = ColorFromPalette(randomPalette2, pos2, 255, LINEARBLEND);   // Use that value for both the location as well as the palette index colour for the pixel.
     LEFT [pos3] += CHSV( gHue2, 255, 255);
     RIGHT[pos4] += CHSV( gHue1, 255, 255);
-    // double temp = 5.0;
-    // int pos1 = beatsin16(11, 0, NUM_LEDS*temp);
-    // int pos2 = beatsin16(13, 0, NUM_LEDS*temp);
-    // int pos3 = beatsin16( 9, 0, NUM_LEDS*temp);
-    // int pos4 = beatsin16(15, 0, NUM_LEDS*temp);
-    // double scaledpos1 = pos1/(NUM_LEDS*temp) * NUM_LEDS/2;
-    // double scaledpos2 = pos2/(NUM_LEDS*temp) * NUM_LEDS/2;
-    // double scaledpos3 = pos3/(NUM_LEDS*temp) * NUM_LEDS/2;
-    // double scaledpos4 = pos4/(NUM_LEDS*temp) * NUM_LEDS/2;
-    // for(int i = 0; i < NUM_LEDS/2; i++){
-        // double a, b, c, w = 0.5; int val;
-        // a = i-scaledpos2;
-        // a = -w*a*a;
-        // val = 255.0*pow(2, a);
-        // RIGHT[i] = ColorFromPalette(randomPalette1, (int)scaledpos2, 255, LINEARBLEND);
-        // a = i-scaledpos4;
-        // a = -w*a*a;
-        // val = 255.0*pow(2, a);
-        // RIGHT[i] += CHSV(gHue1, 255, val);
-        // a = i-scaledpos1;
-        // a = -w*a*a;
-        // val = 255.0*pow(2, a);
-        // LEFT [i] = ColorFromPalette(randomPalette2, (int)scaledpos1, 255, LINEARBLEND);
-        // a = i-scaledpos3;
-        // a = -w*a*a;
-        // val = 255.0*pow(2, a);
-        // LEFT [i] += CHSV(gHue2, 255, val);
-    // }
 }
 
 void dot_beat() {
@@ -582,7 +554,7 @@ void ripple_blur(){ // randomly drop a light somewhere and blur it using blur1d
 }
 
 void drawClock(){
-    if(timeStatus() == timeNotSet){
+    if(timeStatus() == timeNotSet){  // if time is not set or not available, attempt to sync but jump to the next/previous pattern
         timeLoop();
         if(WSdata.startsWith("prev"))
             previousPattern();
@@ -590,11 +562,11 @@ void drawClock(){
             nextPattern();
     }else{
         nscale8( leds, NUM_LEDS, 200);
-        int sec = millis()%(60*1000);
-        double secPos = sec/60000.0 * NUM_LEDS/2;
-        int min = ::now()%(60*60);
-        double minPos = min/(60.0*60.0) * NUM_LEDS/2;
-        int _hour = ::now()%(60*60*12);
+        int sec        = millis()%(60*1000);
+        double secPos  = sec/60000.0 * NUM_LEDS/2;
+        int min        = ::now()%(60*60);              //// TimeLib function 'now()' conflicted with AppleMIDI variable 'now'
+        double minPos  = min/(60.0*60.0) * NUM_LEDS/2;
+        int _hour      = ::now()%(60*60*12);
         double hourPos = _hour/(60.0*60.0*12.0) * NUM_LEDS/2;
         int    p       = beatsin16(60, (NUM_LEDS*5)/3, (NUM_LEDS*5)/3*2);              // range of input
         double pPos    = p/(NUM_LEDS*5.0) * (NUM_LEDS/2-1); // range scaled down to working length
