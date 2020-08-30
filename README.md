@@ -39,6 +39,6 @@ Make sure you have the latest [Arduino Core for ESP32](https://github.com/espres
 
 3) **Wire it up**
 
-- LED data out -> ESP32 pin 13
+- WS2812B LED data pin -> ESP32 pin 13
 
 - audio in -> pin 39 (mono), pins 39 and 36 (stereo) - see diagram [`stereo_input_wiring.jpg`](https://github.com/ohnoitsalobo/sound-reactive-esp32/blob/master/Stereo_Input_Wiring.jpg)
