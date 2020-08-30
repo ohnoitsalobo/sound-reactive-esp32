@@ -96,33 +96,25 @@ void OnAppleMidiError(const ssrc_t& ssrc, int32_t err) {
     // Serial.println(velocity);
 // }
 
-//////// MIDI stuff
-
 CRGB lastPressed;  // holder for last-detected key color
-
-void runLED(){
-}
 
 void MIDI2LED(){
     EVERY_N_MILLISECONDS(50){ _hue++; gHue1++; gHue2--;}
     EVERY_N_MILLISECONDS(20){ 
-        // fadeToBlackBy( leds, NUM_LEDS, 10); // ( sustain ? 3 : 10) );
         nscale8( leds, NUM_LEDS, 240); // ( sustain ? 3 : 10) );
     }
+
     // MIDI note values 0 - 127 
     // 36-96 (for 61-key keyboard)
 
     uint8_t _pos = MIDIdata[1]/127.0 * (NUM_LEDS/2-1); // map note to position
     uint8_t _col = MIDIdata[1]/127.0 * 224; // map note to position
     
-    // uint8_t _pos = map(temp, 0, NUM_LEDS, 0, NUM_LEDS-1);
-    // assign color based on note position and intensity (velocity)
     RIGHT[_pos] = CHSV(_col + _hue, 255 - (MIDIdata[2]/2.0), MIDIdata[2]/127.0 * 255);
     LEFT [_pos] = RIGHT[_pos];
     if(MIDIdata[2] > 0 && millis()%2 == 0)
         MIDIdata[2]--;
     lastPressed = RIGHT[_pos]; // remember last-detected note color
-
     yield();
 }
 

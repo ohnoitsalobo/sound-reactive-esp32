@@ -6,12 +6,12 @@ FASTLED_USING_NAMESPACE
 #define BRIGHTNESS  255*225/255
 
 CRGBArray<NUM_LEDS> leds;                              // LED array containing all LEDs
-CRGBSet RIGHT (leds (0,            NUM_LEDS/2-1)   );  // < subset containing only right  LEDs
-CRGBSet R1    (leds (0,            NUM_LEDS/4-1)   );  //   < further subset 
-CRGBSet R2    (leds (NUM_LEDS/4,   NUM_LEDS/2-1)   );  //   < further subset 
-CRGBSet LEFT  (leds (NUM_LEDS/2,   NUM_LEDS)       );  // < subset containing only left LEDs
-CRGBSet L1    (leds (NUM_LEDS/2,   3*NUM_LEDS/4-1) );  //   < further subset
-CRGBSet L2    (leds (3*NUM_LEDS/4, NUM_LEDS)       );  //   < further subset
+CRGBSet RIGHT (leds (0,            NUM_LEDS/2-1)   );  // < subset containing only left  LEDs
+CRGBSet R1    (leds (0,            NUM_LEDS/4-1)   );  // < subset containing only left  side of left  LEDs
+CRGBSet R2    (leds (NUM_LEDS/4,   NUM_LEDS/2-1)   );  // < subset containing only right side of left  LEDs
+CRGBSet LEFT  (leds (NUM_LEDS/2,   NUM_LEDS)       );  // < subset containing only right LEDs
+CRGBSet L1    (leds (NUM_LEDS/2,   3*NUM_LEDS/4-1) );  // < subset containing only left  side of right LEDs
+CRGBSet L2    (leds (3*NUM_LEDS/4, NUM_LEDS)       );  // < subset containing only right side of right LEDs
 
 CRGBPalette16 currentPalette, targetPalette;
 CRGBPalette16 randomPalette1, randomPalette2;
@@ -32,7 +32,7 @@ uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
 
 void ledSetup(){
 #ifdef debug
-    Serial.println("\tStarting ledSetup");
+    _serial_.println("\tStarting ledSetup");
 #endif
     FastLED.addLeds< LED_TYPE, LED_PINS, COLOR_ORDER >( leds, NUM_LEDS ).setCorrection( TypicalLEDStrip );
     FastLED.setBrightness(currentBrightness);
@@ -42,23 +42,22 @@ void ledSetup(){
     setupNoise();
     fill_solid (leds, NUM_LEDS, CRGB::Black);
 #ifdef debug
-    Serial.println("\tEnding ledSetup");
+    _serial_.println("\tEnding ledSetup");
 #endif
 }
 
 void ledLoop(){
 #ifdef debug
-    Serial.println("\tStarting ledLoop");
+    _serial_.println("\tStarting ledLoop");
 #endif
-    if(MIDIconnected){  // if MIDI is connected, disables all other animation
+    if(MIDIconnected){
         MIDI2LED();
         FastLED.show();
-
     }else{
-        if(music && gCurrentPatternNumber == 0)  // enable FFT for the audio spectrum routine
+        if(music && gCurrentPatternNumber == 0)
             FFTenable = true;
-        else if(FFTenable)                       // else disable FFT in case we want to use the 
-            FFTenable = false;                   // audio pin for anything else
+        else if(FFTenable)
+            FFTenable = false;
         
         if(music){
             audioPatterns[gCurrentPatternNumber]();
@@ -90,13 +89,13 @@ void ledLoop(){
          if(currentBrightness < _setBrightness) FastLED.setBrightness(++currentBrightness);
     else if(currentBrightness > _setBrightness) FastLED.setBrightness(--currentBrightness);
 #ifdef debug
-    Serial.println("\tEnding ledLoop");
+    _serial_.println("\tEnding ledLoop");
 #endif
 }
 
 void audio_spectrum(){ // using arduinoFFT to calculate frequencies and mapping them to light spectrum
-    uint8_t fadeval = 90; // smaller = faster fade
-    nscale8(leds, NUM_LEDS, fadeval);
+    uint8_t fadeval = 90;
+    nscale8(leds, NUM_LEDS, fadeval); // smaller = faster fade
     CRGB tempRGB1, tempRGB2;
     uint8_t pos = 0, h = 0, s = 0, v = 0;
     double temp1 = 0, temp2 = 0;
@@ -279,7 +278,7 @@ void bpm()
     // CRGBPalette16 palette = PartyColors_p;
     CRGBPalette16 palette = RainbowColors_p;
     uint8_t beat = beatsin8( BeatsPerMinute, 64, 255);
-    for( int i = 0; i < NUM_LEDS/2; i++) {
+    for( int i = 0; i < NUM_LEDS/2; i++) { //9948
         RIGHT[i]              = ColorFromPalette(palette, gHue1+(i*2), beat-gHue1+(i*10));
         LEFT [NUM_LEDS/2-1-i] = ColorFromPalette(palette, gHue2+(i*2), beat-gHue2+(i*10));
         yield();
@@ -564,13 +563,13 @@ void drawClock(){
             nextPattern();
     }else{
         nscale8( leds, NUM_LEDS, 200);
-        int    sec     = millis()%(60*1000);
-        double secPos  = sec/60000.0 * NUM_LEDS/2;
-        int    min     = ::now()%(60*60);              // specify ::now() (TimeLib function) because of clash with MIDI library variable 'MIDI::now'
-        double minPos  = min/(60.0*60.0) * NUM_LEDS/2;
-        int    _hour   = ::now()%(60*60*12);
+        int sec = millis()%(60*1000);
+        double secPos = sec/60000.0 * NUM_LEDS/2;
+        int min = getTime()%(60*60);  // had to create a getTime() because now() clashed with MIDI library
+        double minPos = min/(60.0*60.0) * NUM_LEDS/2;
+        int _hour = getTime()%(60*60*12);
         double hourPos = _hour/(60.0*60.0*12.0) * NUM_LEDS/2;
-        int    p       = beatsin16(60, (NUM_LEDS*5)/3, (NUM_LEDS*5)/3*2); // range of input
+        int    p       = beatsin16(60, (NUM_LEDS*5)/3, (NUM_LEDS*5)/3*2);              // range of input
         double pPos    = p/(NUM_LEDS*5.0) * (NUM_LEDS/2-1); // range scaled down to working length
         
         for(int i = 0; i < NUM_LEDS/2; i++){

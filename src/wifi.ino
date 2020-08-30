@@ -7,21 +7,21 @@ AsyncEventSource events("/events");
 
 void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
     if(type == WS_EVT_CONNECT){
-        Serial.printf("ws[%s][%u] connect\n", server->url(), client->id());
+        _serial_.printf("ws[%s][%u] connect\n", server->url(), client->id());
         client->printf("Hello Client %u :)", client->id());
         client->ping();
     } else if(type == WS_EVT_DISCONNECT){
-        Serial.printf("ws[%s][%u] disconnect\n", server->url(), client->id());
+        _serial_.printf("ws[%s][%u] disconnect\n", server->url(), client->id());
     } else if(type == WS_EVT_ERROR){
-        Serial.printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t*)arg), (char*)data);
+        _serial_.printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t*)arg), (char*)data);
     } else if(type == WS_EVT_PONG){
-        Serial.printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");
+        _serial_.printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");
     } else if(type == WS_EVT_DATA){
         AwsFrameInfo * info = (AwsFrameInfo*)arg;
         WSdata = "";
         if(info->final && info->index == 0 && info->len == len){
             //the whole message is in a single frame and we got all of it's data
-            Serial.printf("ws[%s][%u] %s-message[%llu]: ", server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
+            _serial_.printf("ws[%s][%u] %s-message[%llu]: ", server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
 
             if(info->opcode == WS_TEXT){
                 for(size_t i=0; i < info->len; i++) {
@@ -34,7 +34,7 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
                     WSdata += buff ;
                 }
             }
-            Serial.printf("%s\n",WSdata.c_str());
+            _serial_.printf("%s\n",WSdata.c_str());
 
             if(info->opcode == WS_TEXT){
                 client->text("I got your text message");
@@ -47,11 +47,11 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
             //message is comprised of multiple frames or the frame is split into multiple packets
             if(info->index == 0){
                 if(info->num == 0)
-                    Serial.printf("ws[%s][%u] %s-message start\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
-                    Serial.printf("ws[%s][%u] frame[%u] start[%llu]\n", server->url(), client->id(), info->num, info->len);
+                    _serial_.printf("ws[%s][%u] %s-message start\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
+                    _serial_.printf("ws[%s][%u] frame[%u] start[%llu]\n", server->url(), client->id(), info->num, info->len);
             }
 
-            Serial.printf("ws[%s][%u] frame[%u] %s[%llu - %llu]: ", server->url(), client->id(), info->num, (info->message_opcode == WS_TEXT)?"text":"binary", info->index, info->index + len);
+            _serial_.printf("ws[%s][%u] frame[%u] %s[%llu - %llu]: ", server->url(), client->id(), info->num, (info->message_opcode == WS_TEXT)?"text":"binary", info->index, info->index + len);
 
             if(info->opcode == WS_TEXT){
                 for(size_t i=0; i < len; i++) {
@@ -64,12 +64,12 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
                     WSdata += buff ;
                 }
             }
-            Serial.printf("%s\n",WSdata.c_str());
+            _serial_.printf("%s\n",WSdata.c_str());
 
             if((info->index + len) == info->len){
-                Serial.printf("ws[%s][%u] frame[%u] end[%llu]\n", server->url(), client->id(), info->num, info->len);
+                _serial_.printf("ws[%s][%u] frame[%u] end[%llu]\n", server->url(), client->id(), info->num, info->len);
                 if(info->final){
-                    Serial.printf("ws[%s][%u] %s-message end\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
+                    _serial_.printf("ws[%s][%u] %s-message end\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
                 if(info->message_opcode == WS_TEXT)
                     client->text("I got your text message");
                 else
@@ -84,7 +84,7 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 
 void wifiSetup(){
 #ifdef debug
-    Serial.println("\tStarting wifiSetup");
+    _serial_.println("\tStarting wifiSetup");
 #endif
     WiFi.disconnect();
     WiFi.mode(WIFI_STA);
@@ -100,26 +100,28 @@ void wifiSetup(){
     
     timeSetup();
 #ifdef debug
-    Serial.println("\tEnding wifiSetup");
+    _serial_.println("\tEnding wifiSetup");
 #endif
 }
 
 void wifiLoop(){
     if(WiFi.status() == WL_CONNECTED){
         ArduinoOTA.handle();
-        ws.cleanupClients();
+        EVERY_N_MILLISECONDS(500){
+            ws.cleanupClients();
+        }
         EVERY_N_MILLISECONDS(2000){
-            Serial.println(WiFi.localIP());
+            _serial_.println(WiFi.localIP());
         }
         if(!digitalRead(2)){
             digitalWrite(2, HIGH);
-            Serial.println("Wifi connected!");
+            _serial_.println("Wifi connected!");
         }
     }
     
     if(WiFi.status() != WL_CONNECTED){
         EVERY_N_SECONDS(1){
-            Serial.println("Wifi disconnected");
+            _serial_.println("Wifi disconnected");
             WiFi.begin(ssid, password);
         }
         if(digitalRead(2))
@@ -130,7 +132,7 @@ void wifiLoop(){
 
 void setupOTA(){
 #ifdef debug
-    Serial.println("\t\tStarting setupOTA");
+    _serial_.println("\t\tStarting setupOTA");
 #endif
     ArduinoOTA.setPort(3232);
 
@@ -148,14 +150,14 @@ void setupOTA(){
             }
             // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
             events.send("Update Start", "ota");
-            Serial.println("\r\nStart updating " + type);
+            _serial_.println("\r\nStart updating " + type);
             
             fill_solid (leds, NUM_LEDS, CRGB::Black);
             FastLED.show();
         })
         .onEnd([]() {
             digitalWrite(2, LOW);
-            Serial.println("\r\nEnd");
+            _serial_.println("\r\nEnd");
             events.send("Update End", "ota");
             delay(10);
         })
@@ -165,7 +167,7 @@ void setupOTA(){
             sprintf(p, "Progress: %u%%\n", (progress/(total/100)));
             events.send(p, "ota");
             uint32_t temp = progress / (total / 100);
-            Serial.printf("Progress: %u%%\r", temp);
+            _serial_.printf("Progress: %u%%\r", temp);
             if(temp<99){
                 int t = map(temp, 0, 99, 0, NUM_LEDS/4);
                 fill_solid( RIGHT(           0, NUM_LEDS/4), t, 0x020202);
@@ -180,24 +182,24 @@ void setupOTA(){
         .onError([](ota_error_t error) {
             fill_solid (leds, NUM_LEDS, CRGB::Red);
             FastLED.show();
-            Serial.printf("Error[%u]: ", error);
-            if (error == OTA_AUTH_ERROR)        { Serial.println("Auth Failed");    events.send("Auth Failed", "ota");    }
-            else if (error == OTA_BEGIN_ERROR)  { Serial.println("Begin Failed");   events.send("Begin Failed", "ota");   }
-            else if (error == OTA_CONNECT_ERROR){ Serial.println("Connect Failed"); events.send("Connect Failed", "ota"); }
-            else if (error == OTA_RECEIVE_ERROR){ Serial.println("Receive Failed"); events.send("Recieve Failed", "ota"); }
-            else if (error == OTA_END_ERROR)    { Serial.println("End Failed");     events.send("End Failed", "ota");     }
+            _serial_.printf("Error[%u]: ", error);
+            if (error == OTA_AUTH_ERROR)        { _serial_.println("Auth Failed");    events.send("Auth Failed", "ota");    }
+            else if (error == OTA_BEGIN_ERROR)  { _serial_.println("Begin Failed");   events.send("Begin Failed", "ota");   }
+            else if (error == OTA_CONNECT_ERROR){ _serial_.println("Connect Failed"); events.send("Connect Failed", "ota"); }
+            else if (error == OTA_RECEIVE_ERROR){ _serial_.println("Receive Failed"); events.send("Recieve Failed", "ota"); }
+            else if (error == OTA_END_ERROR)    { _serial_.println("End Failed");     events.send("End Failed", "ota");     }
             fill_solid (leds, NUM_LEDS, CRGB::Black);
             FastLED.show();
         });
     ArduinoOTA.begin();
 #ifdef debug
-    Serial.println("\t\tEnding setupOTA");
+    _serial_.println("\t\tEnding setupOTA");
 #endif
 }
 
 void setupServer(){
 #ifdef debug
-    Serial.println("\t\tStarting setupServer");
+    _serial_.println("\t\tStarting setupServer");
 #endif
     ws.onEvent(onWsEvent);
     server.addHandler(&ws);
@@ -216,46 +218,46 @@ void setupServer(){
     server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
 
     server.onNotFound([](AsyncWebServerRequest *request){
-            Serial.printf("NOT_FOUND: ");
+            _serial_.printf("NOT_FOUND: ");
         if(request->method() == HTTP_GET)
-            Serial.printf("GET");
+            _serial_.printf("GET");
         else if(request->method() == HTTP_POST)
-            Serial.printf("POST");
+            _serial_.printf("POST");
         else if(request->method() == HTTP_DELETE)
-            Serial.printf("DELETE");
+            _serial_.printf("DELETE");
         else if(request->method() == HTTP_PUT)
-            Serial.printf("PUT");
+            _serial_.printf("PUT");
         else if(request->method() == HTTP_PATCH)
-            Serial.printf("PATCH");
+            _serial_.printf("PATCH");
         else if(request->method() == HTTP_HEAD)
-            Serial.printf("HEAD");
+            _serial_.printf("HEAD");
         else if(request->method() == HTTP_OPTIONS)
-            Serial.printf("OPTIONS");
+            _serial_.printf("OPTIONS");
         else
-            Serial.printf("UNKNOWN");
-            Serial.printf(" http://%s%s\n", request->host().c_str(), request->url().c_str());
+            _serial_.printf("UNKNOWN");
+            _serial_.printf(" http://%s%s\n", request->host().c_str(), request->url().c_str());
 
         if(request->contentLength()){
-            Serial.printf("_CONTENT_TYPE: %s\n", request->contentType().c_str());
-            Serial.printf("_CONTENT_LENGTH: %u\n", request->contentLength());
+            _serial_.printf("_CONTENT_TYPE: %s\n", request->contentType().c_str());
+            _serial_.printf("_CONTENT_LENGTH: %u\n", request->contentLength());
         }
 
         int headers = request->headers();
         int i;
         for(i=0;i<headers;i++){
             AsyncWebHeader* h = request->getHeader(i);
-            Serial.printf("_HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
+            _serial_.printf("_HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
         }
 
         int params = request->params();
         for(i=0;i<params;i++){
             AsyncWebParameter* p = request->getParam(i);
             if(p->isFile()){
-                Serial.printf("_FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
+                _serial_.printf("_FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
             } else if(p->isPost()){
-                Serial.printf("_POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
+                _serial_.printf("_POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
             } else {
-                Serial.printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
+                _serial_.printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
             }
         }
 
@@ -263,21 +265,21 @@ void setupServer(){
     });
         server.onFileUpload([](AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final){
         if(!index)
-        Serial.printf("UploadStart: %s\n", filename.c_str());
-        Serial.printf("%s", (const char*)data);
+        _serial_.printf("UploadStart: %s\n", filename.c_str());
+        _serial_.printf("%s", (const char*)data);
         if(final)
-        Serial.printf("UploadEnd: %s (%u)\n", filename.c_str(), index+len);
+        _serial_.printf("UploadEnd: %s (%u)\n", filename.c_str(), index+len);
     });
     server.onRequestBody([](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
         if(!index)
-        Serial.printf("BodyStart: %u\n", total);
-        Serial.printf("%s", (const char*)data);
+        _serial_.printf("BodyStart: %u\n", total);
+        _serial_.printf("%s", (const char*)data);
         if(index + len == total)
-        Serial.printf("BodyEnd: %u\n", total);
+        _serial_.printf("BodyEnd: %u\n", total);
     });
     server.begin();
 #ifdef debug
-    Serial.println("\t\tEnding setupServer");
+    _serial_.println("\t\tEnding setupServer");
 #endif
 }
 
@@ -363,18 +365,18 @@ time_t getNtpTime()
     IPAddress ntpServerIP; // NTP server's ip address
 
     while (Udp.parsePacket() > 0) ; // discard any previously received packets
-    Serial.println("Transmit NTP Request");
+    _serial_.println("Transmit NTP Request");
     // get a random server from the pool
     WiFi.hostByName(ntpServerName, ntpServerIP);
-    Serial.print(ntpServerName);
-    Serial.print(": ");
-    Serial.println(ntpServerIP);
+    _serial_.print(ntpServerName);
+    _serial_.print(": ");
+    _serial_.println(ntpServerIP);
     sendNTPpacket(ntpServerIP);
     uint32_t beginWait = millis();
     while (millis() - beginWait < 1500) {
         int size = Udp.parsePacket();
         if (size >= NTP_PACKET_SIZE) {
-            Serial.println("Receive NTP Response");
+            _serial_.println("Receive NTP Response");
             Udp.read(packetBuffer, NTP_PACKET_SIZE);  // read packet into the buffer
             unsigned long secsSince1900;
             // convert four bytes starting at location 40 to a long integer
@@ -385,7 +387,7 @@ time_t getNtpTime()
             return secsSince1900 - 2208988800UL + timeZone * SECS_PER_HOUR;
         }
     }
-    Serial.println("No NTP Response :-(");
+    _serial_.println("No NTP Response :-(");
     return 0; // return 0 if unable to get the time
 }
 

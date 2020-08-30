@@ -2,15 +2,16 @@
   With all the headers in a separate file, all functions and global variables
   are accessible anywhere in the code.
 \*----------------------------------------------------------------------------------------------------*/
+#define _serial_ Serial
 #include "headers.h"
 
 // #define debug 1
 void setup(){
 #ifdef debug
-    Serial.println("Starting setup");
+    _serial_.println("Starting setup");
 #endif
-    Serial.begin(115200); pinMode(2, OUTPUT);
-    Serial.setDebugOutput(true);
+    _serial_.begin(115200); pinMode(2, OUTPUT);
+    _serial_.setDebugOutput(true);
 
     //// set up WiFi - see wifi.ino
     wifiSetup();
@@ -31,23 +32,25 @@ void setup(){
     //// including WiFi related tasks, so be careful.
 
 #ifdef debug
-    Serial.println("Ending setup");
+    _serial_.println("Ending setup");
 #endif
 }
 
 void loop(){
 #ifdef debug
-    Serial.println("Starting loop");
+    _serial_.println("Starting loop");
 #endif
     
     //// run WiFi handlers
     wifiLoop();
+    
     //// run MIDI handlers
     MIDIloop();
+
     //// make LED flashy flashy brrrrrrr
     ledLoop();
-   
+    
 #ifdef debug
-    Serial.println("Ending loop");
+    _serial_.println("Ending loop");
 #endif
 }

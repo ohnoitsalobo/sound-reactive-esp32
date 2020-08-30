@@ -1,13 +1,15 @@
-# Audio frequency and wireless-MIDI reactive WS2812B LED program for ESP32-Arduino
+# Audio frequency and wireless-MIDI reactive LED program for ESP32-Arduino
 
 This code was all written (and/or copied) in Notepad++, and compiled in PlatformIO. It _should_ work right out of the box.
-*Should*.
+*Should*. It is built for WS2812B LEDs, data connected on pin 13.
 
-I originally wrote this program for my [sound-reactive speaker lights](https://www.instagram.com/p/BvR3FLChP0C/).
+I originally wrote this program for my [sound-reactive speaker lights](https://www.instagram.com/p/BvR3FLChP0C/). This includes a compact webpage to control the colors manually.
 
 Later on I incorporated some code from [a previous MIDI LED project](https://www.instagram.com/p/BZefjNADfg1/) to make it MIDI-responsive, with some modifications to make it work over WiFi. Network MIDI is natively supported by Mac, and can be added Windows by installing [rtpMIDI](https://www.tobias-erichsen.de/software/rtpmidi.html).
 
-Finally, I recently switched from the regular ESP32 Server code to AsyncServer, and learned how to run the audio analysis routine (FFT) on the secondary ESP32 processor, freeing up the primary CPU to run the LEDs independently. Thanks to [Andreas Spiess](https://github.com/SensorsIot/ESP32-Dual-Core) for his code.
+Finally, I recently switched it to AsyncServer, and learned how to run the audio analysis routine (FFT) on the secondary ESP32 processor, freeing up the primary CPU to run the LEDs independently. Thanks to [Andreas Spiess](https://github.com/SensorsIot/ESP32-Dual-Core) for his dual-core code template.
+
+My ESP32 modules were defective and factory-locked at 160MHz. With a full-speed 240MHz ESP32 module, you should have better FFT capability.
 
 ___
 
