@@ -2,6 +2,7 @@ FASTLED_USING_NAMESPACE
 
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
+#define LED_PINS    13
 #define BRIGHTNESS  255*225/255
 
 CRGBArray<NUM_LEDS> leds;                              // LED array containing all LEDs
@@ -12,7 +13,8 @@ CRGBSet LEFT  (leds (NUM_LEDS/2,   NUM_LEDS)       );  // < subset containing on
 CRGBSet L1    (leds (NUM_LEDS/2,   3*NUM_LEDS/4-1) );  //   < further subset
 CRGBSet L2    (leds (3*NUM_LEDS/4, NUM_LEDS)       );  //   < further subset
 
-CRGBPalette16 currentPalette, targetPalette, randomPalette1, randomPalette2;
+CRGBPalette16 currentPalette, targetPalette;
+CRGBPalette16 randomPalette1, randomPalette2;
 TBlendType    currentBlending;
 uint8_t maxChanges = 24;        // Value for blending between palettes.
 
@@ -27,7 +29,6 @@ typedef void (*SimplePatternList[])();
 SimplePatternList autoPatterns = { drawClock, rainbow, rainbowWithGlitter, rainbow_scaling, fire, fireSparks, fireRainbow, noise1, noise2, noise3, blendwave, confetti, ripple_blur, sinelon, dot_beat, juggle };
 SimplePatternList audioPatterns = { audio_spectrum, audioLight };
 uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
-
 
 void ledSetup(){
 #ifdef debug
@@ -49,13 +50,15 @@ void ledLoop(){
 #ifdef debug
     Serial.println("\tStarting ledLoop");
 #endif
-    if(MIDIconnected){
-        runLED();
+    if(MIDIconnected){  // if MIDI is connected, disables all other animation
+        MIDI2LED();
+        FastLED.show();
+
     }else{
-        if(music && gCurrentPatternNumber == 0)  // 
-            FFTenable = true;                    // enable FFT only for the frequency responsive routine(s)
-        else if(FFTenable)                       // else disable FFT
-            FFTenable = false;                   // 
+        if(music && gCurrentPatternNumber == 0)  // enable FFT for the audio spectrum routine
+            FFTenable = true;
+        else if(FFTenable)                       // else disable FFT in case we want to use the 
+            FFTenable = false;                   // audio pin for anything else
         
         if(music){
             audioPatterns[gCurrentPatternNumber]();
@@ -92,7 +95,6 @@ void ledLoop(){
 }
 
 void audio_spectrum(){ // using arduinoFFT to calculate frequencies and mapping them to light spectrum
-    
     uint8_t fadeval = 90; // smaller = faster fade
     nscale8(leds, NUM_LEDS, fadeval);
     CRGB tempRGB1, tempRGB2;
@@ -105,11 +107,11 @@ void audio_spectrum(){ // using arduinoFFT to calculate frequencies and mapping 
         s = 255 - (temp1*30.0);
         v = temp1*255.0;
         tempRGB1 = CHSV(h, s, v);
-        if(tempRGB1 > RIGHT[pos]){   // allow the brightest frequency to keep the LED lit, else it will show black even if there is a frequency on that range
+        uint8_t p = NUM_LEDS/2-pos;
+        if(tempRGB1 > RIGHT[pos]){
             RIGHT[pos] = tempRGB1;
         }
 
-        uint8_t p = NUM_LEDS/2-pos;
         temp2 = spectrum[2][i]/MAX;
         s = 255 - (temp2*30.0);
         v = temp2*255.0;
@@ -139,21 +141,21 @@ void audioLight(){ // directly sampling ADC values mapped to brightness
             _val = (temp1-_noise)/float(mid) * 255;
             _hue = _val/255.0 * 65;
         }
-        R1[NUM_LEDS/4-1] = CHSV( _hue+gHue1, _sat, _val*_val/255);
-        R2[0] = R1[NUM_LEDS/4-1];
+        L1[NUM_LEDS/4-1] = CHSV( _hue+gHue1, _sat, _val*_val/255);
+        L2[0] = L1[NUM_LEDS/4-1];
         
 #ifdef STEREO
         _hue = 0; _val = 0;
-        int temp2 = abs(mid - analogRead( RightPin));
+        int temp2 = abs(mid - analogRead(RightPin));
         if(temp2 > _noise){
             _val = (temp2-_noise)/float(mid) * 255;
             _hue = _val/255.0 * 65;
         }
-        L1[NUM_LEDS/4-1] = CHSV( _hue+gHue2, _sat, _val*_val/255);
-        L2[0] = L1[NUM_LEDS/4-1];
+        R1[NUM_LEDS/4-1] = CHSV( _hue+gHue1, _sat, _val*_val/255);
+        R2[0] = R1[NUM_LEDS/4-1];
 #else
-        L1[NUM_LEDS/4-1] = R1[NUM_LEDS/4-1];
-        L2[0] = L1[NUM_LEDS/4-1];
+        R1[NUM_LEDS/4-1] = L1[NUM_LEDS/4-1];
+        R2[0] = R1[NUM_LEDS/4-1];
 #endif
     }
 }
@@ -277,7 +279,7 @@ void bpm()
     // CRGBPalette16 palette = PartyColors_p;
     CRGBPalette16 palette = RainbowColors_p;
     uint8_t beat = beatsin8( BeatsPerMinute, 64, 255);
-    for( int i = 0; i < NUM_LEDS/2; i++) { //9948
+    for( int i = 0; i < NUM_LEDS/2; i++) {
         RIGHT[i]              = ColorFromPalette(palette, gHue1+(i*2), beat-gHue1+(i*10));
         LEFT [NUM_LEDS/2-1-i] = ColorFromPalette(palette, gHue2+(i*2), beat-gHue2+(i*10));
         yield();
@@ -554,7 +556,7 @@ void ripple_blur(){ // randomly drop a light somewhere and blur it using blur1d
 }
 
 void drawClock(){
-    if(timeStatus() == timeNotSet){  // if time is not set or not available, attempt to sync but jump to the next/previous pattern
+    if(timeStatus() == timeNotSet){
         timeLoop();
         if(WSdata.startsWith("prev"))
             previousPattern();
@@ -562,13 +564,13 @@ void drawClock(){
             nextPattern();
     }else{
         nscale8( leds, NUM_LEDS, 200);
-        int sec        = millis()%(60*1000);
+        int    sec     = millis()%(60*1000);
         double secPos  = sec/60000.0 * NUM_LEDS/2;
-        int min        = ::now()%(60*60);              //// TimeLib function 'now()' conflicted with AppleMIDI variable 'now'
+        int    min     = ::now()%(60*60);              // specify ::now() (TimeLib function) because of clash with MIDI library variable 'MIDI::now'
         double minPos  = min/(60.0*60.0) * NUM_LEDS/2;
-        int _hour      = ::now()%(60*60*12);
+        int    _hour   = ::now()%(60*60*12);
         double hourPos = _hour/(60.0*60.0*12.0) * NUM_LEDS/2;
-        int    p       = beatsin16(60, (NUM_LEDS*5)/3, (NUM_LEDS*5)/3*2);              // range of input
+        int    p       = beatsin16(60, (NUM_LEDS*5)/3, (NUM_LEDS*5)/3*2); // range of input
         double pPos    = p/(NUM_LEDS*5.0) * (NUM_LEDS/2-1); // range scaled down to working length
         
         for(int i = 0; i < NUM_LEDS/2; i++){
@@ -597,33 +599,24 @@ void drawClock(){
     }
 }
 
-/*  */
+ // computationally intensive point interpolation since exponential bell curve
+
+double temp = 5.0; // set this for the "resolution" of the bell curve temp*NUM_LEDS
+double width = 1.5; // set this for the "width" of the bell curve (how many LEDs to light)
+double _smear = 4.0*sqrt(1.0/(width*width*width)); // this calculates the necessary coefficient for a width of w
 void interpolationTest(){
     EVERY_N_MILLISECONDS( 55 ) { gHue1++; }
     EVERY_N_MILLISECONDS( 57 ) { gHue2--; }
     nscale8( leds, NUM_LEDS, 20);
-    /*  */
-    double temp = 5.0;
+
     int pos = beatsin16(1, 0, NUM_LEDS*temp);              // range of input
-    double scaledpos = pos/(NUM_LEDS*temp) * NUM_LEDS/2; // range scaled down to working length
+    double a, scaledpos = pos/(NUM_LEDS*temp) * NUM_LEDS/2; // range scaled down to working length
     for(int i = 0; i < NUM_LEDS/2; i++){
-        double a, w = 0.5;
         a = i-scaledpos;
-        a = -w*a*a;
+        a = -_smear*a*a;
         int val = 255.0*pow(2, a);
         RIGHT[i] |= CHSV(gHue1, 255, val);
         LEFT [i] |= CHSV(gHue2, 255, val);
     }
-    /*  */
-    /*  * /
-    for(int i = 0; i < NUM_LEDS/2; i++){
-        int h = gHue1, s = 255;
-        double v = cos16(i/(NUM_LEDS/2.0)*65536+millis()*30)+32768;
-        for(uint8_t i = 0; i < 5; i++){
-            v *= v/65535.0;
-        }
-        RIGHT[i] = CHSV(h, s, v/65535.0*255);
-    }
-    /*  */
 }
-/*  */
+

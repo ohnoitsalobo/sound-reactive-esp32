@@ -1,40 +1,6 @@
 var temp = [0], audiodata;
 var connection = new WebSocket('ws://'+location.hostname+'/ws',['arduino']);
-// var connection = new WebSocket('ws://speaker.local:81/', ['arduino']);
 
-// connection.onopen = function () {
-    // connection.send('Connect ' + new Date());
-// };
-
-// connection.onerror = function (error) {
-    // console.log('WebSocket Error ', error);
-// };
-
-// connection.onmessage = function (e) { 
-    // audiodata = e.data;
-    // temp = audiodata.split(",");
-    console.log('Server: ', temp);
-// };
-
-// connection.onclose = function(){
-    // console.log('WebSocket connection closed');
-// };
-
-var ws = null;
-function ge(s){ /* return document.getElementById(s); */}
-function ce(s){ /* return document.createElement(s); */}
-function stb(){ window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight); }
-function sendBlob(str){
-    var buf = new Uint8Array(str.length);
-    for (var i = 0; i < str.length; ++i) buf[i] = str.charCodeAt(i);
-        ws.send(buf);
-}
-function addMessage(m){
-    // var msg = ce("div");
-    // msg.innerText = m;
-    // ge("dbg").appendChild(msg);
-    // stb();
-}
 function startSocket(){
     // connection = new WebSocket('ws://'+document.location.host+'/ws',['arduino']);
     connection.onopen = function () {
@@ -46,62 +12,8 @@ function startSocket(){
     connection.onclose = function(){
         console.log('WebSocket connection closed');
     };
-    // connection.onmessage = function (e) { 
-        // audiodata = e.data;
-        // temp = audiodata.split(",");
-        // console.log('Server: ', temp);
-    // };
-
-    // ws.binaryType = "arraybuffer";
-    // ws.onopen = function(e){
-        // addMessage("Connected");
-    // };
-    // ws.onclose = function(e){
-        // addMessage("Disconnected");
-    // };
-    // ws.onerror = function(e){
-        // console.log("ws error", e);
-        // addMessage("Error");
-    // };
-    // ws.onmessage = function(e){
-        // var msg = "";
-        // if(e.data instanceof ArrayBuffer){
-            // msg = "BIN:";
-            // var bytes = new Uint8Array(e.data);
-            // for (var i = 0; i < bytes.length; i++) {
-                // msg += String.fromCharCode(bytes[i]);
-            // }
-        // } else {
-            // msg = "TXT:"+e.data;
-        // }
-        // addMessage(msg);
-    // };
-    // ge("input_el").onkeydown = function(e){
-        // stb();
-        // if(e.keyCode == 13 && ge("input_el").value != ""){
-            // ws.send(ge("input_el").value);
-            // ge("input_el").value = "";
-        // }
-    // }
 }
 
-function startEvents(){
-    var es = new EventSource('/events');
-    es.onopen = function(e) {
-        addMessage("Events Opened");
-    };
-    es.onerror = function(e) {
-        if (e.target.readyState != EventSource.OPEN) {
-            addMessage("Events Closed");
-        }
-    };
-    es.onmessage = function(e) {
-        addMessage("Event: " + e.data);
-    };
-    es.addEventListener('ota', function(e) {
-        addMessage("Event[ota]: " + e.data);
-    }, false);
-}
 
 function onBodyLoad(){
     startSocket();
@@ -197,17 +109,7 @@ function setup(){
     cnv.parent('p5js');
     cnv.style('border-radius: 10%;');
     frameRate(10);
-    // img = loadImage('hue_square.png');
     img = loadImage('hue_circle.png');
-    // colorMode(HSB, 255);
-    // for(let i = 0; i < width; i++){
-        // for(let j = 0; j < height/2; j++){
-            // stroke(i*224.0/width, j, 255);
-            // point(i, j);
-            // stroke(i*224.0/width, 255, 255-j);
-            // point(i, j+height/2);
-        // }
-    // }
 }
 
 function rainbowHeader(){
@@ -236,8 +138,7 @@ function colorWheel(){
     m == 2           &&
     mouseIsPressed   &&
     mouseX <= width  && mouseX >= 0 &&
-    mouseY <= height && mouseY >= 0 
-    ){
+    mouseY <= height && mouseY >= 0 ){
         colorMode(RGB);
         c = get(mouseX, mouseY);
         document.getElementById('r' ).value = c[0];
@@ -273,28 +174,6 @@ function colorWheel(){
     arc(width/2, height/2, width+t+20, width+t+20, -PI/2, PI/2);
     stroke(leftcolor);
     arc(width/2, height/2, width+t+20, width+t+20, PI/2, -PI/2);
-    /*  * /
-    colorMode(HSB, 255);
-    translate(width/2, height/2);
-    rotate(PI);
-    angleMode(DEGREES);
-    fill(255); noStroke();
-    let radius = 0.9*width/2;
-    circle(0, 0, width*0.975);
-    strokeWeight(4);
-    let deg = 360;
-    for(let j = 0; j < deg; j++){
-        rotate(360/deg);
-        for(let i = 0; i < radius; i++){
-            let _hue = j/deg*255;
-            let _sat = (i < radius/2) ? 255 : 255-((i-radius/2)/(radius/2))*255;
-            let _val = (i > radius/2) ? 255 : (i/(radius/2))*255;
-            stroke(_hue, _sat, _val);
-            point(0, i);
-        }
-    }
-    noLoop();
-    /*  */
 }
 
 function setHue(hue) { // Set the RGB LED to a given hue (color) (0° = Red, 120° = Green, 240° = Blue)

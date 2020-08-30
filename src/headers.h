@@ -1,43 +1,39 @@
-#include <SPIFFS.h>        // 
-#include <SPIFFSEditor.h>  // filesystem libraries
-#include <FS.h>            // 
+#include <SPIFFS.h>
+#include <SPIFFSEditor.h>
+#include <FS.h>
 
-#include <WiFi.h>          // WiFi library
-#include <ArduinoOTA.h>    // OTA update library
-#include <ESPmDNS.h>       // mDNS library
-const char* ssid = "linksys1";       // ssid
-const char* password = "9182736450"; // password
-const char * hostName = "esp-async"; // mDNS name = http://[hostname].local
+#include <WiFi.h>
+#include <ArduinoOTA.h>
+#include <ESPmDNS.h>
+const char* ssid = "linksys1";
+const char* password = "9182736450";
+const char * hostName = "esp-async";
 const char* http_username = "admin";
 const char* http_password = "admin";
 
-#define CONFIG_ASYNC_TCP_RUNNING_CORE 0
+
+#define CONFIG_ASYNC_TCP_RUNNING_CORE 0  // configure async server to run from second CPU core
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-String WSdata = ""; // holder for WebSocket data
+String WSdata = "";  // holder for WebSocket data
 
-#include <WiFiUdp.h>
 #include <TimeLib.h>
 static const char ntpServerName[] = "pool.ntp.org";
 const double timeZone = 5.5; // IST
-
+time_t getNtpTime();
+void sendNTPpacket(IPAddress &address);
+#include <WiFiUdp.h>
 WiFiUDP Udp;
 unsigned int localPort = 8888;  // local port to listen for UDP packets
 
-time_t getNtpTime();
-void sendNTPpacket(IPAddress &address);
-
 #include <arduinoFFT.h>
-//// uncomment this if you intend to analyze stereo signals, see the pin numbers in FFT.ino
-// #define STEREO
 
-#define FASTLED_INTERNAL // suppresses FastLED pragma messages
+#define FASTLED_INTERNAL // suppress FastLED pragma messages
 #include <FastLED.h>
-#define LED_PINS 13
-#define NUM_LEDS 72
-bool music = 1;
-bool manual = 0;
-bool _auto = 0;
+#define NUM_LEDS 144
+bool music = 1;    //
+bool manual = 0;   // change which is '1' to change the default starting mode.
+bool _auto = 0;    //
 bool FFTenable = true;
 
 #define APPLEMIDI_INITIATOR

@@ -1,10 +1,3 @@
-#define CONFIG_ASYNC_TCP_RUNNING_CORE 0
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <SPIFFS.h>        // 
-#include <SPIFFSEditor.h>  // filesystem libraries
-#include <FS.h>            // 
-
 //// Most of the AsyncServer code was copied with minimal modification from one of the examples,
   // so most of the time I have no idea what's going on here.
 
@@ -87,6 +80,8 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
     }
 }
 
+
+
 void wifiSetup(){
 #ifdef debug
     Serial.println("\tStarting wifiSetup");
@@ -112,10 +107,8 @@ void wifiSetup(){
 void wifiLoop(){
     if(WiFi.status() == WL_CONNECTED){
         ArduinoOTA.handle();
-        EVERY_N_SECONDS(1){
-            ws.cleanupClients();
-        }
-        EVERY_N_SECONDS(2){
+        ws.cleanupClients();
+        EVERY_N_MILLISECONDS(2000){
             Serial.println(WiFi.localIP());
         }
         if(!digitalRead(2)){
@@ -288,7 +281,7 @@ void setupServer(){
 #endif
 }
 
-void handleSliders(){ // handle the slider values from the WebSocket
+void handleSliders(){
     if(WSdata.startsWith("reset")){
         WiFi.disconnect();
         digitalWrite(2, LOW);
