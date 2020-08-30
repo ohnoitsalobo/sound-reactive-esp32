@@ -29,9 +29,12 @@ time_t getNtpTime();
 void sendNTPpacket(IPAddress &address);
 
 #include <arduinoFFT.h>
+//// uncomment this if you intend to analyze stereo signals, see the pin numbers in FFT.ino
+// #define STEREO
 
 #define FASTLED_INTERNAL // suppresses FastLED pragma messages
 #include <FastLED.h>
+#define LED_PINS 13
 #define NUM_LEDS 72
 bool music = 1;
 bool manual = 0;

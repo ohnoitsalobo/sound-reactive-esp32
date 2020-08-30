@@ -1,4 +1,4 @@
-#Audio frequency and wireless-MIDI reactive LED program for ESP32-Arduino
+# Audio frequency and wireless-MIDI reactive WS2812B LED program for ESP32-Arduino
 
 This code was all written (and/or copied) in Notepad++, and compiled in PlatformIO. It _should_ would right out of the box.
 **Should**.
@@ -17,4 +17,14 @@ This code was all written (and/or copied) in Notepad++, and compiled in Platform
 
 - [AsyncTCP](https://github.com/me-no-dev/AsyncTCP)
 
-2) Compile
+2) Compile and upload program (`src` folder) AND filesystem (`data` folder)
+
+- `pio run -t upload`
+
+- `pio run -t uploadfs`
+
+3) Wire up to necessary electronics
+
+- LED data out -> ESP32 pin 13
+
+- audio in -> pin 39 (mono), pins 39 and 36 (stereo) (see diagram `stereo_input_wiring.jpg`)

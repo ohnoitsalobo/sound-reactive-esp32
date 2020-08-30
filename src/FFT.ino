@@ -23,9 +23,6 @@
     // (stereo) two independent channels at 512 samples per channel
 //// If, like mine, your ESP32 is locked at 160 MHz, stick with one channel, 512 samples 
 
-//// uncomment this if you intend to analyze stereo signals, see the pin numbers below
-// #define STEREO
-
 #ifdef STEREO
 #define RightPin  36
 #endif

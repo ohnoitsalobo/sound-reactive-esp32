@@ -2,7 +2,6 @@ FASTLED_USING_NAMESPACE
 
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
-#define LED_PINS    13
 #define BRIGHTNESS  255*225/255
 
 CRGBArray<NUM_LEDS> leds;                              // LED array containing all LEDs
