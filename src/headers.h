@@ -5,9 +5,9 @@
 #include <WiFi.h>
 #include <ArduinoOTA.h>
 #include <ESPmDNS.h>
-change ssid/password
-const char* ssid = "********";
-const char* password = "********";
+// change ssid/password
+const char* ssid = "linksys1";
+const char* password = "9182736450";
 // change hostname to be something recognizable - network address will be http://[hostName].local
 const char * hostName = "ESP32";
 
@@ -32,7 +32,7 @@ unsigned int localPort = 8888;  // local port to listen for UDP packets
 
 #define FASTLED_INTERNAL // suppress FastLED pragma messages
 #include <FastLED.h>
-change number of LEDs
+// change number of LEDs
 #define NUM_LEDS 144
 bool music = 1;    //
 bool manual = 0;   // change which is '1' to change the default starting mode.
