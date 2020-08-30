@@ -1,7 +1,7 @@
 # Audio frequency and wireless-MIDI reactive WS2812B LED program for ESP32-Arduino
 
-This code was all written (and/or copied) in Notepad++, and compiled in PlatformIO. It _should_ would right out of the box.
-**Should**.
+This code was all written (and/or copied) in Notepad++, and compiled in PlatformIO. It _should_ work right out of the box.
+*Should*.
 
 I originally wrote this program for my [sound-reactive speaker lights](https://www.instagram.com/p/BvR3FLChP0C/).
 
@@ -11,7 +11,7 @@ Finally, I recently switched from the regular ESP32 Server code to AsyncServer, 
 
 ___
 
-1) Install necessary libraries.
+1) **Install necessary libraries.**
 
 Make sure you have the latest [Arduino Core for ESP32](https://github.com/espressif/arduino-esp32) installed.
 
@@ -27,7 +27,7 @@ Make sure you have the latest [Arduino Core for ESP32](https://github.com/espres
 
 - [AsyncTCP](https://github.com/me-no-dev/AsyncTCP)
 
-2) Compile and upload program (`src`) AND filesystem (`data`)
+2) **Compile and upload program (`src`) AND filesystem (`data`)**
 
 - change wireless SSID and password, LED data pin, and number of LEDs in `headers.h` (you may need to adjust `FFT.ino` for the best audio-reactive display, but it should still look OK without adjustment).
 
@@ -35,7 +35,7 @@ Make sure you have the latest [Arduino Core for ESP32](https://github.com/espres
 
 - `pio run -t uploadfs` (filesystem)
 
-3) Wire up to necessary electronics
+3) **Wire it up**
 
 - LED data out -> ESP32 pin 13
 
