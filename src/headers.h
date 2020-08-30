@@ -7,7 +7,7 @@
 #include <ESPmDNS.h>
 const char* ssid = "linksys1";
 const char* password = "9182736450";
-const char * hostName = "esp-async";
+const char * hostName = "ESP32";
 const char* http_username = "admin";
 const char* http_password = "admin";
 

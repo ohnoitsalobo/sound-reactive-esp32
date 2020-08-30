@@ -7,7 +7,7 @@ I originally wrote this program for my [sound-reactive speaker lights](https://w
 
 Later on I incorporated some code from [a previous MIDI LED project](https://www.instagram.com/p/BZefjNADfg1/) to make it MIDI-responsive, with some modifications to make it work over WiFi. Network MIDI is natively supported by Mac, and can be added Windows by installing [rtpMIDI](https://www.tobias-erichsen.de/software/rtpmidi.html).
 
-Finally, I recently switched from the regular ESP32 Server code to AsyncServer, and learned how to run the audio analysis routine (FFT) on the secondary ESP32 processor, freeing up the primary core to run the LEDs independently.
+Finally, I recently switched from the regular ESP32 Server code to AsyncServer, and learned how to run the audio analysis routine (FFT) on the secondary ESP32 processor, freeing up the primary CPU to run the LEDs independently. Thanks to [Andreas Spiess](https://github.com/SensorsIot/ESP32-Dual-Core) for his code.
 
 ___
 
@@ -40,6 +40,3 @@ Make sure you have the latest [Arduino Core for ESP32](https://github.com/espres
 - LED data out -> ESP32 pin 13
 
 - audio in -> pin 39 (mono), pins 39 and 36 (stereo) - see diagram [`stereo_input_wiring.jpg`](https://github.com/ohnoitsalobo/sound-reactive-esp32/blob/master/Stereo_Input_Wiring.jpg)
-
-These can be changed in `platformio.ini`
-
