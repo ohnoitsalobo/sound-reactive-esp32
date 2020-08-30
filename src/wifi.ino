@@ -1,3 +1,10 @@
+#define CONFIG_ASYNC_TCP_RUNNING_CORE 0
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <SPIFFS.h>        // 
+#include <SPIFFSEditor.h>  // filesystem libraries
+#include <FS.h>            // 
+
 //// Most of the AsyncServer code was copied with minimal modification from one of the examples,
   // so most of the time I have no idea what's going on here.
 

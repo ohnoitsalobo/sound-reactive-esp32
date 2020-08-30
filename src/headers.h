@@ -11,11 +11,10 @@ const char * hostName = "esp-async"; // mDNS name = http://[hostname].local
 const char* http_username = "admin";
 const char* http_password = "admin";
 
-
 #define CONFIG_ASYNC_TCP_RUNNING_CORE 0
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-String WSdata = "";
+String WSdata = ""; // holder for WebSocket data
 
 #include <WiFiUdp.h>
 #include <TimeLib.h>
