@@ -1,13 +1,13 @@
-#include <SPIFFS.h>
-#include <SPIFFSEditor.h>
-#include <FS.h>
+#include <SPIFFS.h>        // 
+#include <SPIFFSEditor.h>  // filesystem libraries
+#include <FS.h>            // 
 
-#include <WiFi.h>
-#include <ArduinoOTA.h>
-#include <ESPmDNS.h>
-const char* ssid = "linksys1";
-const char* password = "9182736450";
-const char * hostName = "esp-async";
+#include <WiFi.h>          // WiFi library
+#include <ArduinoOTA.h>    // OTA update library
+#include <ESPmDNS.h>       // mDNS library
+const char* ssid = "linksys1";       // ssid
+const char* password = "9182736450"; // password
+const char * hostName = "esp-async"; // mDNS name = http://[hostname].local
 const char* http_username = "admin";
 const char* http_password = "admin";
 
@@ -19,7 +19,7 @@ String WSdata = "";
 
 #include <WiFiUdp.h>
 #include <TimeLib.h>
-static const char ntpServerName[] = "in.pool.ntp.org";
+static const char ntpServerName[] = "pool.ntp.org";
 const double timeZone = 5.5; // IST
 
 WiFiUDP Udp;
@@ -29,14 +29,13 @@ time_t getNtpTime();
 void sendNTPpacket(IPAddress &address);
 
 #include <arduinoFFT.h>
-// #define FASTLED_ALLOW_INTERRUPTS 0
-// #define INTERRUPT_THRESHOLD 1
-// #define FASTLED_INTERRUPT_RETRY_COUNT 0
-// #define FASTLED_ESP32_FLASH_LOCK 1
-#define FASTLED_INTERNAL
+
+#define FASTLED_INTERNAL // suppresses FastLED pragma messages
 #include <FastLED.h>
-#define NUM_LEDS 144
+#define NUM_LEDS 72
 bool music = 1;
+bool manual = 0;
+bool _auto = 0;
 bool FFTenable = true;
 
 #define APPLEMIDI_INITIATOR
@@ -46,5 +45,3 @@ byte MIDIdata[] = {0, 0, 0};
 uint8_t _hue = 0;             // modifier for key color cycling
 bool sustain = false;         // is sustain pedal on?
 bool MidiEventReceived = false;
-
-// SemaphoreHandle_t FFTMutex;
