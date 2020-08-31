@@ -1,9 +1,9 @@
 # Audio frequency and wireless-MIDI reactive LED program for ESP32-Arduino
 
 This code was all written (and/or copied) in Notepad++, and compiled in PlatformIO. It _should_ work right out of the box.
-*Should*. It is built for WS2812B LEDs, data connected on pin 13.
+*Should*. It is built for WS2812B LEDs, data connected on pin 13, this can be changed in the code.
 
-I originally wrote this program for my [sound-reactive speaker lights](https://www.instagram.com/p/BvR3FLChP0C/). This includes a compact webpage to control the colors manually. Code was originally based on [G6EJD's work](https://github.com/G6EJD/ESP32-8-Octave-Audio-Spectrum-Display).
+I originally wrote this program for my [sound-reactive speaker lights](https://www.instagram.com/p/BvR3FLChP0C/). This includes a compact webpage to control the colors manually. Sound-reactive code was originally based on [G6EJD's work](https://github.com/G6EJD/ESP32-8-Octave-Audio-Spectrum-Display), and later modified to display more of the individual frequencies.
 
 Later on I incorporated some code from [a previous MIDI LED project](https://www.instagram.com/p/BZefjNADfg1/) to make it MIDI-responsive, with some modifications to make it work over WiFi. Network MIDI is natively supported by Mac, and can be added Windows by installing [rtpMIDI](https://www.tobias-erichsen.de/software/rtpmidi.html).
 
@@ -13,7 +13,7 @@ My ESP32 modules were defective and factory-locked at 160MHz. With a full-speed 
 
 ___
 
-1) **Install necessary libraries.**
+1) **Install the necessary libraries.**
 
 Make sure you have the latest [Arduino Core for ESP32](https://github.com/espressif/arduino-esp32) installed. Then install the following libraries:
 
@@ -31,7 +31,7 @@ Make sure you have the latest [Arduino Core for ESP32](https://github.com/espres
 
 2) **Compile and upload program (`src`) AND filesystem (`data`)**
 
-- change wireless SSID and password, LED data pin, and number of LEDs in `headers.h` (you may need to adjust the exponent in `FFT.ino` for the best audio-reactive display, but it should still look OK without adjustment).
+- change wireless SSID and password, LED data pin, and number of LEDs in `headers.h` (you may need to adjust the exponent in `FFT.ino` for the best audio-reactive display, but it should still look OK without adjustment). You can also adjust the _type_ of LED by changing it in `LEDs.ino` - read FastLED documentation for which LED types are supported.
 
 - `pio run -t upload` (program)
 

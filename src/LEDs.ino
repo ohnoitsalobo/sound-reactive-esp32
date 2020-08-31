@@ -106,11 +106,12 @@ void audio_spectrum(){ // using arduinoFFT to calculate frequencies and mapping 
         s = 255 - (temp1*30.0);
         v = temp1*255.0;
         tempRGB1 = CHSV(h, s, v);
-        uint8_t p = NUM_LEDS/2-1-pos;
         if(tempRGB1 > RIGHT[pos]){
             RIGHT[pos] = tempRGB1;
         }
 
+        uint8_t p = NUM_LEDS/2-1-pos;
+#ifdef STEREO
         temp2 = spectrum[2][i]/MAX;
         s = 255 - (temp2*30.0);
         v = temp2*255.0;
@@ -118,6 +119,9 @@ void audio_spectrum(){ // using arduinoFFT to calculate frequencies and mapping 
         if(tempRGB2 > LEFT[pos]){
             LEFT[p] = tempRGB2;
         }
+#else
+        LEFT[p] = RIGHT[pos];
+#endif
         yield();
     }
 }

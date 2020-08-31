@@ -112,9 +112,6 @@ void fftLoop(){
     PrintVector(vReal[1], (samples >> 1), 2);
 #endif
 
-#ifdef STEREO
-#endif
-
 #ifdef debug
     _serial_.println("Ending fftLoop");
 #endif
@@ -129,9 +126,6 @@ void PrintVector(double *vData, uint16_t bufferSize, int leftRight) {
         }else{
             spectrum[leftRight][i] = 0;
         }
-#ifndef STEREO
-        spectrum[2][i] = spectrum[1][i]; // mono only
-#endif
         yield();
     }
 }
