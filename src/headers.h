@@ -11,7 +11,7 @@
 // change hostname to be something recognizable - network address will be http://[hostName].local
 const char * hostName = "ESP32";
 
-#define CONFIG_ASYNC_TCP_RUNNING_CORE 0
+#define CONFIG_ASYNC_TCP_RUNNING_CORE 0  
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 const char* http_username = "admin";
@@ -28,7 +28,7 @@ WiFiUDP Udp;
 unsigned int localPort = 8888;  // local port to listen for UDP packets
 
 #include <arduinoFFT.h>
-// uncomment this for stereo analysis
+// uncomment this for stereo analysis, see pin numbers in FFT.ino or change them
 // #define STEREO
 #define FASTLED_INTERNAL
 #include <FastLED.h>
