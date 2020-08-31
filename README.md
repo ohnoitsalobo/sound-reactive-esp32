@@ -3,7 +3,7 @@
 This code was all written (and/or copied) in Notepad++, and compiled in PlatformIO. It _should_ work right out of the box.
 *Should*. It is built for WS2812B LEDs, data connected on pin 13.
 
-I originally wrote this program for my [sound-reactive speaker lights](https://www.instagram.com/p/BvR3FLChP0C/). This includes a compact webpage to control the colors manually.
+I originally wrote this program for my [sound-reactive speaker lights](https://www.instagram.com/p/BvR3FLChP0C/). This includes a compact webpage to control the colors manually. Code was originally based on [G6EJD's work](https://github.com/G6EJD/ESP32-8-Octave-Audio-Spectrum-Display).
 
 Later on I incorporated some code from [a previous MIDI LED project](https://www.instagram.com/p/BZefjNADfg1/) to make it MIDI-responsive, with some modifications to make it work over WiFi. Network MIDI is natively supported by Mac, and can be added Windows by installing [rtpMIDI](https://www.tobias-erichsen.de/software/rtpmidi.html).
 
