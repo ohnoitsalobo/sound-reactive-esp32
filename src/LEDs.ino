@@ -106,7 +106,7 @@ void audio_spectrum(){ // using arduinoFFT to calculate frequencies and mapping 
         s = 255 - (temp1*30.0);
         v = temp1*255.0;
         tempRGB1 = CHSV(h, s, v);
-        uint8_t p = NUM_LEDS/2-pos;
+        uint8_t p = NUM_LEDS/2-1-pos;
         if(tempRGB1 > RIGHT[pos]){
             RIGHT[pos] = tempRGB1;
         }
