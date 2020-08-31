@@ -50,9 +50,9 @@ void ledLoop(){
 #ifdef debug
     _serial_.println("\tStarting ledLoop");
 #endif
-    if(MIDIconnected){
-        MIDI2LED();
-        FastLED.show();
+    if(MIDIconnected){   //
+        MIDI2LED();      // MIDI connection will disable all other animation
+        FastLED.show();  //
     }else{
         if(music && gCurrentPatternNumber == 0)
             FFTenable = true;
