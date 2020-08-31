@@ -28,7 +28,7 @@ void core0_Task0( void * parameter )
 
 void dualCoreInit(){
 #ifdef debug
-    _serial_.println("\tStarting dualCoreInit");
+    Serial.println("\tStarting dualCoreInit");
 #endif
     //// to understand more about how the dual core code works,
     //// read up on FreeRTOS which is part of ESP32-Arduino Core.
@@ -44,7 +44,7 @@ void dualCoreInit(){
     delay(500);  // delay needed to start-up task
 
 #ifdef debug
-    _serial_.println("\tEnding dualCoreInit");
+    Serial.println("\tEnding dualCoreInit");
 #endif
 }
 

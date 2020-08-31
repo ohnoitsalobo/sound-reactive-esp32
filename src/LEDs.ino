@@ -32,7 +32,7 @@ uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
 
 void ledSetup(){
 #ifdef debug
-    _serial_.println("\tStarting ledSetup");
+    Serial.println("\tStarting ledSetup");
 #endif
     FastLED.addLeds< LED_TYPE, LED_PINS, COLOR_ORDER >( leds, NUM_LEDS ).setCorrection( TypicalLEDStrip );
     FastLED.setBrightness(currentBrightness);
@@ -42,13 +42,13 @@ void ledSetup(){
     setupNoise();
     fill_solid (leds, NUM_LEDS, CRGB::Black);
 #ifdef debug
-    _serial_.println("\tEnding ledSetup");
+    Serial.println("\tEnding ledSetup");
 #endif
 }
 
 void ledLoop(){
 #ifdef debug
-    _serial_.println("\tStarting ledLoop");
+    Serial.println("\tStarting ledLoop");
 #endif
     if(MIDIconnected){   //
         MIDI2LED();      // MIDI connection will disable all other animation
@@ -89,7 +89,7 @@ void ledLoop(){
          if(currentBrightness < _setBrightness) FastLED.setBrightness(++currentBrightness);
     else if(currentBrightness > _setBrightness) FastLED.setBrightness(--currentBrightness);
 #ifdef debug
-    _serial_.println("\tEnding ledLoop");
+    Serial.println("\tEnding ledLoop");
 #endif
 }
 

@@ -1,17 +1,16 @@
-/*----------------------------------------------------------------------------------------------------*\
-  With all the headers in a separate file, all functions and global variables
-  are accessible anywhere in the code.
-\*----------------------------------------------------------------------------------------------------*/
-#define _serial_ Serial
+/*----------------------------------------------------------------------------*\
+  With all the headers in a separate file, all functions and global variables 
+  are accessible anywhere in the code.                                        
+\*----------------------------------------------------------------------------*/
 #include "headers.h"
 
 // #define debug 1
 void setup(){
 #ifdef debug
-    _serial_.println("Starting setup");
+    Serial.println("Starting setup");
 #endif
-    _serial_.begin(115200); pinMode(2, OUTPUT);
-    _serial_.setDebugOutput(true);
+    Serial.begin(115200); pinMode(2, OUTPUT);
+    Serial.setDebugOutput(true);
 
     //// set up WiFi - see wifi.ino
     wifiSetup();
@@ -32,13 +31,13 @@ void setup(){
     //// including WiFi related tasks, so be careful.
 
 #ifdef debug
-    _serial_.println("Ending setup");
+    Serial.println("Ending setup");
 #endif
 }
 
 void loop(){
 #ifdef debug
-    _serial_.println("Starting loop");
+    Serial.println("Starting loop");
 #endif
     
     //// run WiFi handlers
@@ -51,6 +50,6 @@ void loop(){
     ledLoop();
     
 #ifdef debug
-    _serial_.println("Ending loop");
+    Serial.println("Ending loop");
 #endif
 }

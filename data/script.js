@@ -1,4 +1,3 @@
-var temp = [0], audiodata;
 var connection = new WebSocket('ws://'+location.hostname+'/ws',['arduino']);
 
 function startSocket(){
@@ -17,7 +16,6 @@ function startSocket(){
 
 function onBodyLoad(){
     startSocket();
-    // startEvents();
     process();
 }
 
@@ -61,7 +59,6 @@ function sendRGB(_temp) {
              if(_ll) { rgbstr += 'L'; }
         else if(_rr) { rgbstr += 'R'; }
     }
-    // var rgbstr = '#'+ rgb.toString(16);    
     console.log('RGB: ' + rgbstr); 
     connection.send(rgbstr);
     c = [r, g, b];

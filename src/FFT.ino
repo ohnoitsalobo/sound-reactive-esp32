@@ -80,7 +80,7 @@ void fftSetup(){
   // main LED code, on the other core of the ESP32.
 void fftLoop(){
 #ifdef debug
-    _serial_.println("Starting fftLoop");
+    Serial.println("Starting fftLoop");
 #endif
 
     //// audio signal capture happens here
@@ -113,7 +113,7 @@ void fftLoop(){
 #endif
 
 #ifdef debug
-    _serial_.println("Ending fftLoop");
+    Serial.println("Ending fftLoop");
 #endif
 }
 
